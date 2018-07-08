@@ -49,7 +49,7 @@ class FG_eval {
     for (int t = 0; t < N; t++) {
       fg[0] += CppAD::pow(vars[cte_start + t], 2);
       fg[0] += CppAD::pow(vars[epsi_start + t], 2);
-      fg[0] += CppAD::pow(vars[v_start + t] - ref_v, 2);
+      //fg[0] += CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
 
     // Minimize the use of actuators.
@@ -191,12 +191,12 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   constraints_lowerbound[cte_start] = state[4];
   constraints_lowerbound[epsi_start] = state[5];
 
-  constraints_upperbound[x_start] = x;
-  constraints_upperbound[y_start] = y;
-  constraints_upperbound[psi_start] = psi;
-  constraints_upperbound[v_start] = v;
-  constraints_upperbound[cte_start] = cte;
-  constraints_upperbound[epsi_start] = epsi;
+  constraints_upperbound[x_start] = state[0];
+  constraints_upperbound[y_start] = state[1];
+  constraints_upperbound[psi_start] = state[2];
+  constraints_upperbound[v_start] = state[3];
+  constraints_upperbound[cte_start] = state[4];
+  constraints_upperbound[epsi_start] = state[5];
 
   // object that computes objective and constraints
   FG_eval fg_eval(coeffs);
