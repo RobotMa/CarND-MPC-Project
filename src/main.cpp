@@ -103,7 +103,7 @@ int main() {
           Eigen::Map<Eigen::VectorXd> xref(ptrX, ptsx.size());
           Eigen::Map<Eigen::VectorXd> yref(ptrY, ptsy.size());
           Eigen::VectorXd coeffs = polyfit(xref, yref, 3);
-          Eigen::VectorXd state;
+          Eigen::VectorXd state(6);
           state[0] = px;
           state[1] = py;
           state[2] = psi;
@@ -113,9 +113,9 @@ int main() {
 
           double steer_value;
           double throttle_value;
-          auto acuators = mpc.Solve(state, coeffs);
-          steer_value = deg2rad(acuators[0]);
-          throttle_value = acuators[1];
+          auto vars = mpc.Solve(state, coeffs);
+          steer_value = deg2rad(vars[0]);
+          throttle_value = vars[1];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.

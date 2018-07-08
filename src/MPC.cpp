@@ -49,7 +49,7 @@ class FG_eval {
     for (int t = 0; t < N; t++) {
       fg[0] += CppAD::pow(vars[cte_start + t], 2);
       fg[0] += CppAD::pow(vars[epsi_start + t], 2);
-      //fg[0] += CppAD::pow(vars[v_start + t] - ref_v, 2);
+      //fg[1] += CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
 
     // Minimize the use of actuators.
@@ -239,5 +239,18 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   //
   // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
   // creates a 2 element double vector.
-  return {};
+  vector<double> result;
+  result.push_back(solution.x[delta_start]);
+  result.push_back(solution.x[a_start]);
+
+  for(size_t i = x_start + 1; i < y_start; ++i)
+  {
+      result.push_back(solution.x[i]);
+  }
+
+  for(size_t i = y_start + 1; i < psi_start; ++i)
+  {
+      result.push_back(solution.x[i]);
+  }
+  return result;
 }
