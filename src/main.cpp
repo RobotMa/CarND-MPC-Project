@@ -98,18 +98,28 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          double* ptrX = &ptsx[0];
-          double* ptrY = &ptsy[0];
-          Eigen::Map<Eigen::VectorXd> xref(ptrX, ptsx.size());
-          Eigen::Map<Eigen::VectorXd> yref(ptrY, ptsy.size());
+          vector<double> veh_x;
+          vector<double> veh_y;
+
+          for (size_t i = 0; i < ptsx.size(); ++i) {
+            double dx = ptsx[i] - px;
+            double dy = ptsy[i] - py;
+            veh_x.push_back(dx * cos(-psi) - dy * sin(-psi));
+            veh_y.push_back(dx * sin(-psi) + dy * cos(-psi));
+          }
+
+          double* ptrX = &veh_x[0];
+          double* ptrY = &veh_y[0];
+          Eigen::Map<Eigen::VectorXd> xref(ptrX, veh_x.size());
+          Eigen::Map<Eigen::VectorXd> yref(ptrY, veh_y.size());
           Eigen::VectorXd coeffs = polyfit(xref, yref, 3);
           Eigen::VectorXd state(6);
-          state[0] = px;
-          state[1] = py;
-          state[2] = psi;
+          state[0] = 0;
+          state[1] = 0;
+          state[2] = 0;
           state[3] = v;
-          state[4] = py - polyeval(coeffs, px);
-          state[5] = psi - atan(coeffs[1]);
+          state[4] = polyeval(coeffs, px);
+          state[5] = - atan(coeffs[1]);
 
           double steer_value;
           double throttle_value;
@@ -139,6 +149,11 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
+          for(size_t i = 0; i < ptsx.size(); ++i)
+          {
+              next_x_vals.push_back(i);
+              next_y_vals.push_back(polyeval(coeffs, i));
+          }
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
@@ -151,7 +166,7 @@ int main() {
           // the car does actuate the commands instantly.
           //
           // Feel free to play around with this value but should be to drive
-          // around the track with 100ms latency.
+          // around the track with 101ms latency.
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
