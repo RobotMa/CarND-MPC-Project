@@ -110,21 +110,22 @@ int main() {
 
           double* ptrX = &veh_x[0];
           double* ptrY = &veh_y[0];
-          Eigen::Map<Eigen::VectorXd> xref(ptrX, veh_x.size());
-          Eigen::Map<Eigen::VectorXd> yref(ptrY, veh_y.size());
-          Eigen::VectorXd coeffs = polyfit(xref, yref, 3);
+          Eigen::Map<Eigen::VectorXd> xref(ptrX,6);
+          Eigen::Map<Eigen::VectorXd> yref(ptrY,6);
+          Eigen::VectorXd coeffs(4);
+          coeffs = polyfit(xref, yref, 3);
           Eigen::VectorXd state(6);
-          state[0] = 0;
-          state[1] = 0;
-          state[2] = 0;
+          state[0] = 0.0;
+          state[1] = 0.0;
+          state[2] = 0.0;
           state[3] = v;
-          state[4] = polyeval(coeffs, px);
+          state[4] = polyeval(coeffs, 0);
           state[5] = - atan(coeffs[1]);
 
           double steer_value;
           double throttle_value;
           auto vars = mpc.Solve(state, coeffs);
-          steer_value = deg2rad(vars[0]);
+          steer_value = vars[0]/deg2rad(25);
           throttle_value = vars[1];
 
           json msgJson;
@@ -136,6 +137,11 @@ int main() {
           //Display the MPC predicted trajectory 
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
+          for(size_t i = 2; i < vars.size(); ++i)
+          {
+              if (i%2 == 0) mpc_x_vals.push_back(vars[i]);
+              else mpc_y_vals.push_back(vars[i]);
+          }
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
@@ -149,7 +155,7 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
-          for(size_t i = 0; i < ptsx.size(); ++i)
+          for(size_t i = 0; i < 20; ++i)
           {
               next_x_vals.push_back(i);
               next_y_vals.push_back(polyeval(coeffs, i));
@@ -170,7 +176,7 @@ int main() {
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds(100));
+          this_thread::sleep_for(chrono::milliseconds(1));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
