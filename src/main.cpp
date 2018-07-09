@@ -125,12 +125,12 @@ int main() {
           state[5] = - atan(coeffs[1]);
 
           // Predict next state due to latency
-          state[0] = state[0] + cos(state[2])*state[3]*0.1;
-          state[1] = state[1] + sin(state[2])*state[3]*0.1;
-          state[2] = state[2] - state[3]/2.67*steer_v*0.1;
-          state[3] = state[3] + throttle_v * 0.1;
-          state[4] = state[4] + state[3]*sin(state[5])*0.1;
-          state[5] = state[5] - (state[3]*atan(coeffs[1])*0.1/2.67);
+          //state[0] = state[0] + cos(state[2])*state[3]*0.1;
+          //state[1] = state[1] + sin(state[2])*state[3]*0.1;
+          //state[2] = state[2] - state[3]/2.67*steer_v*0.1;
+          //state[3] = state[3] + throttle_v * 0.1;
+          //state[4] = state[4] + state[3]*sin(state[5])*0.1;
+          //state[5] = state[5] - (state[3]*atan(coeffs[1])*0.1/2.67);
 
           double steer_value;
           double throttle_value;
