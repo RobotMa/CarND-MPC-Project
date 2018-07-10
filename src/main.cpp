@@ -91,8 +91,6 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
-          static double steer_v = 0.0;
-          static double throttle_v = 0.0;
 
           /*
           * TODO: Calculate steering angle and throttle using MPC.
@@ -124,21 +122,11 @@ int main() {
           state[4] = polyeval(coeffs, 0);
           state[5] = - atan(coeffs[1]);
 
-          // Predict next state due to latency
-          //state[0] = state[0] + cos(state[2])*state[3]*0.1;
-          //state[1] = state[1] + sin(state[2])*state[3]*0.1;
-          //state[2] = state[2] - state[3]/2.67*steer_v*0.1;
-          //state[3] = state[3] + throttle_v * 0.1;
-          //state[4] = state[4] + state[3]*sin(state[5])*0.1;
-          //state[5] = state[5] - (state[3]*atan(coeffs[1])*0.1/2.67);
-
           double steer_value;
           double throttle_value;
           auto vars = mpc.Solve(state, coeffs);
           steer_value = vars[0]/deg2rad(25);
           throttle_value = vars[1];
-          steer_v = steer_value;
-          throttle_v = throttle_value;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
