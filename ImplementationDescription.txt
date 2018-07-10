@@ -1,0 +1,19 @@
+1. The model
+
+ The model is essentially the same as introduced in the lecture. The vehicle state includes vehicle positions x and y, heading, longitudinal velocity, cross track error and heading error. The actuators include steering and acceleration/deceleration. The update functions are based on the kinematic bicycle model and they are embedded as equality constraints in the MPC problem. There are also other inequality constraints imposed on steering and acceleration. The cost function is consisted of 7 parts which involve cross track error, heading error, speed error, steering range,
+ acceleration/deceleration range, steering increment and acceleration/deceleration increment.
+
+
+2. Timestep Length and Elapsed Duration
+
+The larger the N is, the more time it costs the optimizer to return a solution. N = 25 was first chosen but it always resulted in weird shape of MPC predicted path either in high speed or at turns. N = 10 is chosen finally which always gave a reasonable predicted path. dt = 0.1 was chosen from the very beginning and it works very well. In theory, the small the dt is, the more acurate the simulated result will be. However, this can cause computational overhead.
+
+3. Polynomial Fitting and MPC Preprocessing
+
+The raw waypoints are transformed into the coordinate system of the vehicle, hence the related vehicle states are also adapted to this change such as vehicle positions and heading.
+
+
+
+4. Model Predictive Control with Latency
+
+Control gain tuning started off by setting latency to 1 ms, which turned out to be very easy. However, it became pretty hard once the lantency was set back to 100 ms. An effort was made to use the kinematic model to predict the next vehicle state given the current state, however, it didn't help much in my case. Instead, control gains were tuned from scratch starting from low speed of 30 mph. The latency was internally handled by carefully tweaking the gains for high speed.
